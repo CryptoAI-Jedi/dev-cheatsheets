@@ -524,7 +524,7 @@
       const res  = await fetch("./" + sheet.file);
       if (!res.ok) throw new Error("HTTP " + res.status);
       const text = await res.text();
-      mdBody.innerHTML = marked.parse(text);
+      mdBody.innerHTML = marked.parse(text, { breaks: true});
 
       // Add copy buttons to all code blocks
       mdBody.querySelectorAll("pre").forEach(pre => {
