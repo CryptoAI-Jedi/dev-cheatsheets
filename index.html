@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CryptoAI-Jedi | Dev Cheatsheets</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+  <style>
+    :root {
+      --bg:       #0d1117;
+      --sidebar:  #161b22;
+      --border:   #30363d;
+      --accent:   #58a6ff;
+      --accent2:  #f78166;
+      --text:     #e6edf3;
+      --muted:    #8b949e;
+      --code-bg:  #1f2937;
+      --hover:    #21262d;
+      --active:   #1f3a5f;
+      --tag:      #388bfd1a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    #sidebar {
+      width: 280px;
+      min-width: 220px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    #sidebar-header {
+      padding: 18px 16px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #sidebar-header h1 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.3px;
+    }
+
+    #sidebar-header p {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    #search-wrap {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #search {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 10px 7px 30px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 9px center;
+    }
+
+    #search:focus { border-color: var(--accent); }
+    #search::placeholder { color: var(--muted); }
+
+    #sheet-count {
+      font-size: 11px;
+      color: var(--muted);
+      padding: 6px 14px 2px;
+    }
+
+    #nav {
+      overflow-y: auto;
+      flex: 1;
+      padding: 4px 8px 16px;
+    }
+
+    #nav::-webkit-scrollbar { width: 4px; }
+    #nav::-webkit-scrollbar-track { background: transparent; }
+    #nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--muted);
+      transition: background 0.15s, color 0.15s;
+      user-select: none;
+      border: 1px solid transparent;
+    }
+
+    .nav-item:hover {
+      background: var(--hover);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: var(--active);
+      color: var(--accent);
+      border-color: #1f6feb55;
+    }
+
+    .nav-icon {
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .nav-label { line-height: 1.3; }
+
+    .nav-item.hidden { display: none; }
+
+    /* ── MAIN ── */
+    #main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    #topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--sidebar);
+      flex-shrink: 0;
+    }
+
+    #topbar-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    #topbar-meta {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    #github-link {
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+
+    #github-link:hover { background: var(--hover); }
+
+    #content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 48px 64px;
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    #content::-webkit-scrollbar { width: 6px; }
+    #content::-webkit-scrollbar-track { background: transparent; }
+    #content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* ── WELCOME SCREEN ── */
+    #welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 16px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    #welcome .big-icon { font-size: 56px; }
+    #welcome h2 { font-size: 22px; color: var(--text); font-weight: 600; }
+    #welcome p { font-size: 14px; max-width: 420px; line-height: 1.6; }
+
+    .welcome-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 8px;
+      max-width: 560px;
+    }
+
+    .welcome-tag {
+      background: var(--tag);
+      border: 1px solid #388bfd33;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: var(--accent);
+    }
+
+    /* ── MARKDOWN RENDERING ── */
+    #md-body h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    #md-body h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 28px 0 10px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #md-body h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 20px 0 8px;
+    }
+
+    #md-body p {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    #md-body ul, #md-body ol {
+      padding-left: 20px;
+      margin-bottom: 12px;
+    }
+
+    #md-body li {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text);
+    }
+
+    #md-body pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      margin: 12px 0 16px;
+      position: relative;
+    }
+
+    #md-body pre::-webkit-scrollbar { height: 4px; }
+    #md-body pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    #md-body code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 13px;
+      color: #e6edf3;
+      background: var(--code-bg);
+      border-radius: 4px;
+      padding: 2px 5px;
+    }
+
+    #md-body pre code {
+      background: transparent;
+      padding: 0;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #e6edf3;
+    }
+
+    #md-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+
+    #md-body th {
+      background: var(--code-bg);
+      color: var(--accent);
+      font-weight: 600;
+      text-align: left;
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+    }
+
+    #md-body td {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    #md-body tr:nth-child(even) td { background: #161b2255; }
+    #md-body tr:hover td { background: var(--hover); }
+
+    #md-body blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 8px 16px;
+      margin: 12px 0;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    #md-body hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    #md-body a { color: var(--accent); }
+
+    /* ── LOADING ── */
+    #loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      color: var(--muted);
+      font-size: 14px;
+      gap: 10px;
+    }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── COPY BUTTON ── */
+    .copy-btn {
+      position: absolute;
+      top: 8px; right: 8px;
+      background: var(--border);
+      border: none;
+      border-radius: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .copy-btn:hover { background: var(--accent); color: #fff; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      #sidebar { width: 220px; }
+      #content { padding: 20px 20px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div id="sidebar-header">
+    <h1>⚡ Dev Cheatsheets</h1>
+    <p>CryptoAI-Jedi · 21 sheets</p>
+  </div>
+  <div id="search-wrap">
+    <input id="search" type="text" placeholder="Filter sheets..." autocomplete="off" />
+  </div>
+  <div id="sheet-count"></div>
+  <nav id="nav"></nav>
+</aside>
+
+<!-- MAIN -->
+<main id="main">
+  <div id="topbar">
+    <div>
+      <div id="topbar-title">Select a cheatsheet</div>
+      <div id="topbar-meta">field-ready CLI · DevOps · Web3 reference</div>
+    </div>
+    <a id="github-link" href="https://github.com/CryptoAI-Jedi/dev-cheatsheets" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.73.083-.73 1.205.085 1.84 1.238 1.84 1.238 1.07 1.835 2.809 1.305 3.495.998.108-.776.418-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.468-2.38 1.235-3.22-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.3 1.23A11.51 11.51 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.29-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.91 1.235 3.22 0 4.61-2.805 5.625-5.475 5.92.43.372.823 1.102.823 2.222 0 1.606-.015 2.896-.015 3.286 0 .322.216.694.825.576C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/>
+      </svg>
+      View on GitHub
+    </a>
+  </div>
+  <div id="content">
+    <div id="welcome">
+      <div class="big-icon">📋</div>
+      <h2>Dev Cheatsheets</h2>
+      <p>A field-ready reference library for CLI tools, infrastructure, APIs, and blockchain development. Select a sheet from the sidebar to get started.</p>
+      <div class="welcome-grid">
+        <div class="welcome-tag">🐧 Linux</div>
+        <div class="welcome-tag">🐳 Docker</div>
+        <div class="welcome-tag">☸️ Kubernetes</div>
+        <div class="welcome-tag">🔧 Bash</div>
+        <div class="welcome-tag">🌿 Git</div>
+        <div class="welcome-tag">📡 Ansible</div>
+        <div class="welcome-tag">☁️ AWS</div>
+        <div class="welcome-tag">🔷 Terraform</div>
+        <div class="welcome-tag">⛓️ Blockchain</div>
+        <div class="welcome-tag">📊 Prometheus</div>
+        <div class="welcome-tag">🔐 SSH/GPG</div>
+        <div class="welcome-tag">🐍 Python</div>
+      </div>
+    </div>
+    <div id="md-body" style="display:none;"></div>
+  </div>
+</main>
+
+<script>
+  const sheets = [
+    { label: "Ansible",              icon: "📡", file: "ansible_cheatsheet.md" },
+    { label: "AWS CLI",              icon: "☁️", file: "aws_cli_cheatsheet.md" },
+    { label: "Bash Scripting",       icon: "🔧", file: "bash_scripting_cheatsheet.md" },
+    { label: "cURL & API Testing",   icon: "🌐", file: "curl_api_testing_cheatsheet.md" },
+    { label: "Docker",               icon: "🐳", file: "docker_cheatsheet.md" },
+    { label: "Git",                  icon: "🌿", file: "git_cheatsheet.md" },
+    { label: "jq",                   icon: "🔍", file: "jq_cheatsheet.md" },
+    { label: "Kubernetes",           icon: "☸️", file: "kubernetes_cheatsheet.md" },
+    { label: "Linux — Arch",         icon: "🐧", file: "linux_arch_cheatsheet.md" },
+    { label: "Linux — CentOS/RHEL",  icon: "🐧", file: "linux_centos_rhel_cheatsheet.md" },
+    { label: "Linux — Debian/Ubuntu",icon: "🐧", file: "linux_debian_ubuntu_cheatsheet.md" },
+    { label: "Nginx",                icon: "⚡", file: "nginx_cheatsheet.md" },
+    { label: "Prometheus & Grafana", icon: "📊", file: "prometheus_grafana_cheatsheet.md" },
+    { label: "Python",               icon: "🐍", file: "python_cheatsheet.md" },
+    { label: "Regex",                icon: "🔤", file: "regex_cheatsheet.md" },
+    { label: "SQL",                  icon: "🗄️", file: "sql_cheatsheet.md" },
+    { label: "SSH & GPG Keys",       icon: "🔐", file: "ssh_gpg_keys_cheatsheet.md" },
+    { label: "systemd & journalctl", icon: "⚙️", file: "systemd_journalctl_cheatsheet.md" },
+    { label: "Terraform",            icon: "🔷", file: "terraform_cheatsheet.md" },
+    { label: "tmux",                 icon: "🖥️", file: "tmux_cheatsheet.md" },
+    { label: "Vim",                  icon: "📝", file: "vim_cheatsheet.md" },
+  ];
+
+  const nav       = document.getElementById("nav");
+  const search    = document.getElementById("search");
+  const mdBody    = document.getElementById("md-body");
+  const welcome   = document.getElementById("welcome");
+  const topTitle  = document.getElementById("topbar-title");
+  const topMeta   = document.getElementById("topbar-meta");
+  const countEl   = document.getElementById("sheet-count");
+  let activeItem  = null;
+
+  // Build nav items
+  sheets.forEach((sheet, i) => {
+    const item = document.createElement("div");
+    item.className = "nav-item";
+    item.dataset.index = i;
+    item.innerHTML = `<span class="nav-icon">${sheet.icon}</span><span class="nav-label">${sheet.label}</span>`;
+    item.addEventListener("click", () => loadSheet(sheet, item));
+    nav.appendChild(item);
+  });
+
+  updateCount();
+
+  // Search filter
+  search.addEventListener("input", () => {
+    const q = search.value.toLowerCase();
+    let visible = 0;
+    nav.querySelectorAll(".nav-item").forEach((item, i) => {
+      const match = sheets[i].label.toLowerCase().includes(q);
+      item.classList.toggle("hidden", !match);
+      if (match) visible++;
+    });
+    updateCount(visible);
+  });
+
+  function updateCount(n) {
+    const total = (n === undefined) ? sheets.length : n;
+    countEl.textContent = total + " sheets";
+  }
+
+  // Load and render a sheet
+  async function loadSheet(sheet, item) {
+    // Update active state
+    if (activeItem) activeItem.classList.remove("active");
+    item.classList.add("active");
+    activeItem = item;
+
+    // Update topbar
+    topTitle.textContent = sheet.icon + "  " + sheet.label;
+    topMeta.textContent  = sheet.file;
+
+    // Show loading
+    welcome.style.display  = "none";
+    mdBody.style.display   = "none";
+    mdBody.innerHTML = `<div id="loading"><div class="spinner"></div> Loading ${sheet.label}...</div>`;
+    mdBody.style.display = "block";
+
+    // Scroll content to top
+    document.getElementById("content").scrollTop = 0;
+
+    try {
+      const res  = await fetch("./" + sheet.file);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const text = await res.text();
+      mdBody.innerHTML = marked.parse(text);
+
+      // Add copy buttons to all code blocks
+      mdBody.querySelectorAll("pre").forEach(pre => {
+        const btn = document.createElement("button");
+        btn.className   = "copy-btn";
+        btn.textContent = "Copy";
+        pre.style.position = "relative";
+        pre.appendChild(btn);
+        btn.addEventListener("click", () => {
+          const code = pre.querySelector("code");
+          navigator.clipboard.writeText(code ? code.innerText : pre.innerText).then(() => {
+            btn.textContent = "✓ Copied";
+            setTimeout(() => btn.textContent = "Copy", 1800);
+          });
+        });
+      });
+
+    } catch (err) {
+      mdBody.innerHTML = `<p style="color:#f78166;">⚠️ Could not load <code>${sheet.file}</code>. Make sure it exists in the repo root.<br><small>${err}</small></p>`;
+    }
+  }
+
+  // Keyboard shortcut: focus search with /
+  document.addEventListener("keydown", e => {
+    if (e.key === "/" && document.activeElement !== search) {
+      e.preventDefault();
+      search.focus();
+    }
+  });
+</script>
+</body>
+</html>
